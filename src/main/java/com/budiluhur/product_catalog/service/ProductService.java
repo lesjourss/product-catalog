@@ -13,17 +13,18 @@ import com.budiluhur.product_catalog.repository.ProductRepository;
  * @Service → Spring Container mendaftarkan ini sebagai Spring Bean.
  *
  * Constructor Injection:
- * Spring otomatis meng-inject ProductRepository saat ProductService dibuat — tanpa keyword 'new'.
- * Field productRepository dideklarasikan final sehingga bersifat immutable.
+ * Spring otomatis meng-inject ProductRepository & DiscountService tanpa keyword 'new'.
  */
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final DiscountService discountService;
 
-    // Constructor Injection — Spring otomatis inject ProductRepository Bean
-    public ProductService(ProductRepository productRepository) {
+    // Constructor Injection — Spring inject kedua Bean secara otomatis
+    public ProductService(ProductRepository productRepository, DiscountService discountService) {
         this.productRepository = productRepository;
+        this.discountService = discountService;
     }
 
     public List<Product> getAllProducts() {
@@ -37,5 +38,16 @@ public class ProductService {
     public Product createProduct(Product product) {
         productRepository.addProduct(product);
         return product;
+    }
+
+    /**
+     * Menghitung harga diskon produk berdasarkan ID.
+     * @param id       ID produk
+     * @param discount persentase diskon (0 = tidak ada diskon)
+     * @return harga setelah diskon
+     */
+    public double getDiscountedProductPrice(String id, double discount) throws ProductNotFoundException {
+        Product product = productRepository.findById(id);
+        return discountService.calculateDiscountedPrice(product.getPrice(), discount);
     }
 }
