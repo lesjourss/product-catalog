@@ -39,4 +39,27 @@ public class ProductRepository {
         }
         throw new ProductNotFoundException("Produk dengan ID '" + id + "' tidak ditemukan!");
     }
+
+    public Product updateProduct(String id, Product updatedProduct) throws ProductNotFoundException {
+        Product existingProduct = findById(id);
+        existingProduct.setName(updatedProduct.getName());
+        existingProduct.setPrice(updatedProduct.getPrice());
+        return existingProduct;
+    }
+
+    public boolean deleteById(String id) throws ProductNotFoundException {
+        Product existingProduct = findById(id);
+        return productList.remove(existingProduct);
+    }
+
+    public List<Product> searchByName(String keyword) {
+        List<Product> result = new ArrayList<>();
+        for (Product product : productList) {
+            if (product.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                result.add(product);
+            }
+        }
+        return result;
+    }
 }
+
