@@ -1,14 +1,27 @@
 package com.budiluhur.product_catalog.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 /**
- * Model class yang merepresentasikan data Produk.
+ * Model class yang merepresentasikan data Produk sebagai JPA Entity.
  */
+@Entity
+@Table(name = "products")
 public class Product {
 
+    @Id
     private String id;
+
+    @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(nullable = false)
     private double price;
 
+    // No-arg constructor (wajib untuk JPA)
     public Product() {
     }
 

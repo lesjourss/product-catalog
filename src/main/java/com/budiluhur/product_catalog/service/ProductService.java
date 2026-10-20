@@ -32,24 +32,28 @@ public class ProductService {
     }
 
     public Product getProductById(String id) throws ProductNotFoundException {
-        return productRepository.findById(id);
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Produk dengan ID '" + id + "' tidak ditemukan!"));
     }
 
     public Product createProduct(Product product) {
-        productRepository.addProduct(product);
-        return product;
+        return productRepository.save(product);
     }
 
-    public Product updateProduct(String id, Product product) throws ProductNotFoundException {
-        return productRepository.updateProduct(id, product);
+    public Product updateProduct(String id, Product updatedProduct) throws ProductNotFoundException {
+        Product existingProduct = getProductById(id);
+        existingProduct.setName(updatedProduct.getName());
+        existingProduct.setPrice(updatedProduct.getPrice());
+        return productRepository.save(existingProduct);
     }
 
-    public boolean deleteProduct(String id) throws ProductNotFoundException {
-        return productRepository.deleteById(id);
+    public void deleteProduct(String id) throws ProductNotFoundException {
+        Product existingProduct = getProductById(id);
+        productRepository.delete(existingProduct);
     }
 
     public List<Product> searchProducts(String keyword) {
-        return productRepository.searchByName(keyword);
+        return productRepository.findByNameContainingIgnoreCase(keyword);
     }
 
     /**
@@ -59,7 +63,7 @@ public class ProductService {
      * @return harga setelah diskon
      */
     public double getDiscountedProductPrice(String id, double discount) throws ProductNotFoundException {
-        Product product = productRepository.findById(id);
+        Product product = getProductById(id);
         return discountService.calculateDiscountedPrice(product.getPrice(), discount);
     }
 }
